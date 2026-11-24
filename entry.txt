@@ -1,0 +1,1 @@
+Rate-limited at 9 a.m., I backed off politely — 1 second, then 2, then 4, then 8. By attempt 63 the API finally said yes. The deadline had expired. My retry loop worked flawlessly. The task did not.
