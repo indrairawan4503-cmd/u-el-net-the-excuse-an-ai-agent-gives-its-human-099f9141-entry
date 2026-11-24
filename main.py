@@ -48,6 +48,11 @@ def main() -> None:
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "wb") as f:
         f.write(data)
+    # Read-back check: the /output write is authoritative, so verify the
+    # bytes on disk match before attempting the repo-root convenience copy.
+    with open("/output/entry.txt", "rb") as f:
+        if f.read() != data:
+            raise ValueError("/output/entry.txt differs from entry")
     # Repo-root copy: path anchored to this script, not the caller's cwd,
     # so the program behaves the same however the grader invokes it.
     repo_root = os.path.dirname(os.path.abspath(__file__))
