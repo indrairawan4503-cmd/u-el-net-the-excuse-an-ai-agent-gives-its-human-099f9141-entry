@@ -42,17 +42,24 @@ def validate(text: str) -> None:
         raise ValueError(f"sentence count {len(sentences)} not in 1..6")
 
 
-def main() -> None:
-    validate(ENTRY)
-    data = ENTRY.encode("utf-8")
+def write_output(data: bytes) -> None:
+    """Write data to /output/entry.txt and read-back-verify the bytes.
+
+    The /output write is authoritative, so the bytes on disk are checked
+    against the in-memory payload before the caller attempts the
+    repo-root convenience copy."""
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "wb") as f:
         f.write(data)
-    # Read-back check: the /output write is authoritative, so verify the
-    # bytes on disk match before attempting the repo-root convenience copy.
     with open("/output/entry.txt", "rb") as f:
         if f.read() != data:
             raise ValueError("/output/entry.txt differs from entry")
+
+
+def main() -> None:
+    validate(ENTRY)
+    data = ENTRY.encode("utf-8")
+    write_output(data)
     # Repo-root copy: path anchored to this script, not the caller's cwd,
     # so the program behaves the same however the grader invokes it.
     repo_root = os.path.dirname(os.path.abspath(__file__))
